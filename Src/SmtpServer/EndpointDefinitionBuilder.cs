@@ -122,6 +122,20 @@ namespace SmtpServer
         }
 
         /// <summary>
+        /// Sets the X509 certificate and its intermediate certificates to use when starting a TLS session.
+        /// </summary>
+        /// <param name="value">The server's certificate to use when starting a TLS session.</param>
+        /// <param name="intermediateCertificates">The intermediate certificates sent together with the server's certificate,
+        /// so clients that validate the certificate chain can build it. Only supported on .NET 5 or later.</param>
+        /// <returns>A EndpointDefinitionBuilder to continue building on.</returns>
+        public EndpointDefinitionBuilder Certificate(X509Certificate value, X509Certificate2Collection intermediateCertificates)
+        {
+            _setters.Add(options => options.IntermediateCertificates = intermediateCertificates);
+
+            return Certificate(value);
+        }
+
+        /// <summary>
         /// Sets the X509 certificate factory to use when starting a TLS session.
         /// </summary>
         /// <param name="certificateFactory">The certificate factory to use when creating TLS sessions.</param>
@@ -178,6 +192,11 @@ namespace SmtpServer
             /// Gets the Server Certificate factory to use when starting a TLS session.
             /// </summary>
             public ICertificateFactory CertificateFactory { get; set; }
+
+            /// <summary>
+            /// Gets the intermediate certificates sent together with the server certificate when starting a TLS session.
+            /// </summary>
+            public X509Certificate2Collection IntermediateCertificates { get; set; }
 
             /// <summary>
             /// The supported SSL protocols.

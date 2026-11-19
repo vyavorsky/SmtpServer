@@ -38,6 +38,13 @@ namespace SmtpServer
         ICertificateFactory CertificateFactory { get; }
 
         /// <summary>
+        /// Gets the intermediate certificates sent together with the server certificate when starting a TLS session,
+        /// so clients that validate the certificate chain can build it. Null or empty sends the server certificate only.
+        /// </summary>
+        /// <remarks>Only supported on .NET 5 or later; ignored on .NET Standard 2.0.</remarks>
+        X509Certificate2Collection IntermediateCertificates { get; }
+
+        /// <summary>
         /// The supported SSL protocols.
         /// </summary>
         SslProtocols SupportedSslProtocols { get; }

@@ -17,8 +17,9 @@ namespace SmtpServer.IO
         /// <param name="protocols">The value that represents the protocol used for authentication.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="remoteCertificateValidationCallback">A user-provided callback method to validate the client certificate. If is null, no validation procedure will be performed</param>
+        /// <param name="intermediateCertificates">The intermediate certificates sent together with the server certificate. If is null or empty, only the server certificate is sent. Only supported on .NET 5 or later.</param>
         /// <returns>A task that asynchronously performs the operation.</returns>
-        Task UpgradeAsync(X509Certificate certificate, SslProtocols protocols, CancellationToken cancellationToken = default, RemoteCertificateValidationCallback remoteCertificateValidationCallback = null);
+        Task UpgradeAsync(X509Certificate certificate, SslProtocols protocols, CancellationToken cancellationToken = default, RemoteCertificateValidationCallback remoteCertificateValidationCallback = null, X509Certificate2Collection intermediateCertificates = null);
 
         /// <summary>
         /// Returns a value indicating whether or not the current pipeline is secure.

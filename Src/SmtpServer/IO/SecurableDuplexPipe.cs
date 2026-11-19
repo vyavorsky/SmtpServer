@@ -30,12 +30,33 @@ namespace SmtpServer.IO
         }
 
         /// <inheritdoc />
-        public async Task UpgradeAsync(X509Certificate certificate, SslProtocols protocols, CancellationToken cancellationToken = default, RemoteCertificateValidationCallback remoteCertificateValidationCallback = null)
+        public async Task UpgradeAsync(X509Certificate certificate, SslProtocols protocols, CancellationToken cancellationToken = default, RemoteCertificateValidationCallback remoteCertificateValidationCallback = null, X509Certificate2Collection intermediateCertificates = null)
         {
             var clientCertificateRequired = remoteCertificateValidationCallback != null;
             var stream = clientCertificateRequired ? new SslStream(_stream, true, remoteCertificateValidationCallback) : new SslStream(_stream, true);
 
+#if NET5_0_OR_GREATER
+            if (intermediateCertificates != null && intermediateCertificates.Count > 0 && certificate is X509Certificate2 serverCertificate)
+            {
+                // The certificate context makes SslStream send the intermediate certificates too. offline: true builds the
+                // chain from the given certificates only, without downloading missing ones.
+                var options = new SslServerAuthenticationOptions
+                {
+                    ServerCertificateContext = SslStreamCertificateContext.Create(serverCertificate, intermediateCertificates, offline: true),
+                    ClientCertificateRequired = clientCertificateRequired,
+                    EnabledSslProtocols = protocols,
+                    CertificateRevocationCheckMode = X509RevocationMode.Online,
+                };
+
+                await stream.AuthenticateAsServerAsync(options, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                await stream.AuthenticateAsServerAsync(certificate, clientCertificateRequired, protocols, true).ConfigureAwait(false);
+            }
+#else
             await stream.AuthenticateAsServerAsync(certificate, clientCertificateRequired, protocols, true).ConfigureAwait(false);
+#endif
 
             _stream = stream;
 

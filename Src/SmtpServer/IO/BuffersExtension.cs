@@ -53,7 +53,7 @@ namespace SmtpServer.IO
                     return false;
                 }
 
-                if (TryMatchAcrossBoundary(ref span, ref next, ref sequence, out index))
+                if (TryMatchAcrossBoundary(span, next, sequence, out index))
                 {
                     head = source.GetPosition(index, head);
                     tail = source.GetPosition(sequence.Length - (span.Length - index), tail);
@@ -76,7 +76,9 @@ namespace SmtpServer.IO
             }
         }
 
-        static bool TryMatchAcrossBoundary(ref ReadOnlySpan<byte> previous, ref ReadOnlySpan<byte> next, ref ReadOnlySpan<byte> sequence, out int index)
+        // Spans are passed by value: none of them is reassigned here, and passing them by ref is rejected by the
+        // ref safety rules of .NET 7+ (CS8350) when compiling for net10.0.
+        static bool TryMatchAcrossBoundary(ReadOnlySpan<byte> previous, ReadOnlySpan<byte> next, ReadOnlySpan<byte> sequence, out int index)
         {
             // we will only call this if a complete match in the previous span isnt found 
             // so we only need to start matching from one byte short of the full sequence

@@ -81,9 +81,9 @@ namespace SampleApp.Examples
                 _securableDuplexPipe = securableDuplexPipe;
             }
 
-            public Task UpgradeAsync(X509Certificate certificate, SslProtocols protocols, CancellationToken cancellationToken = default, RemoteCertificateValidationCallback remoteCertificateValidationCallback = null)
+            public Task UpgradeAsync(X509Certificate certificate, SslProtocols protocols, CancellationToken cancellationToken = default, RemoteCertificateValidationCallback remoteCertificateValidationCallback = null, X509Certificate2Collection intermediateCertificates = null)
             {
-                return _securableDuplexPipe.UpgradeAsync(certificate, protocols, cancellationToken);
+                return _securableDuplexPipe.UpgradeAsync(certificate, protocols, cancellationToken, remoteCertificateValidationCallback, intermediateCertificates);
             }
 
             public void Dispose()

@@ -70,7 +70,7 @@ namespace SmtpServer
             {
                 var serverCertificate = endpoint.CertificateFactory.GetServerCertificate(handle.SessionContext);
 
-                await handle.SessionContext.Pipe.UpgradeAsync(serverCertificate, endpoint.SupportedSslProtocols, cancellationToken).ConfigureAwait(false);
+                await handle.SessionContext.Pipe.UpgradeAsync(serverCertificate, endpoint.SupportedSslProtocols, cancellationToken, intermediateCertificates: endpoint.IntermediateCertificates).ConfigureAwait(false);
             }
         }
 
